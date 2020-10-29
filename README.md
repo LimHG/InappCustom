@@ -20,6 +20,14 @@ it, simply add the following line to your Podfile:
 pod 'InappCustom'
 ```
 
+## How to Use
+
+1. 인앱결제 화면 시작 시 InappCustom 객체 생성
+
+```ruby
+
+```
+
 ## Author
 
 LimHG, dla.hg210@gmail.com
