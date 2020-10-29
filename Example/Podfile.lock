@@ -1,0 +1,16 @@
+PODS:
+  - InappCustom (0.1.0)
+
+DEPENDENCIES:
+  - InappCustom (from `../`)
+
+EXTERNAL SOURCES:
+  InappCustom:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  InappCustom: bfab337f24e39f9a9861f0e07097399f26f02dff
+
+PODFILE CHECKSUM: f518d3901de40d6bbd7cc8c68495bf6dd7f063ad
+
+COCOAPODS: 1.9.3

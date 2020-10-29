@@ -1,0 +1,6 @@
+framework module InappCustom {
+  umbrella header "InappCustom-umbrella.h"
+
+  export *
+  module * { export * }
+}
