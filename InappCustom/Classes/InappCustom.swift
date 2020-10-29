@@ -28,7 +28,7 @@ public protocol InappCustomProtocol: NSObjectProtocol {
     func ICrestoreConsume(_ transaction: SKPaymentTransaction)
 }
 
-class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequestDelegate {
+public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequestDelegate {
     public weak var delegate: InappCustomProtocol?
     public var request: SKProductsRequest? = nil
     public var inappItem: NSMutableArray? = nil
@@ -39,7 +39,7 @@ class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequestDele
     private var viewController: UIViewController? = nil
     
     
-    init(_ viewC : UIViewController) {
+    public init(_ viewC : UIViewController) {
         super.init()
         
         #if DEBUG
@@ -155,7 +155,7 @@ class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequestDele
     
     
     // MARK: --- 딜리게이트: SKPaymentTransactionObserver
-    func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+    public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
         // 복원 상품이 있다면 받을 준비
         self.restoreItem = NSMutableArray.init()
         self.restoreItem?.removeAllObjects()
@@ -206,7 +206,7 @@ class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequestDele
             }
         }
     }
-    func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
+    public func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
         #if DEBUG
         print("ICpaymentQueueRestoreCompletedTransactionsFinished == \(queue.transactions.count)")
         #endif
@@ -262,13 +262,13 @@ class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequestDele
             }
         }
     }
-    func paymentQueue(_ queue: SKPaymentQueue, removedTransactions transactions: [SKPaymentTransaction])
+    public func paymentQueue(_ queue: SKPaymentQueue, removedTransactions transactions: [SKPaymentTransaction])
     {
         #if DEBUG
         print("ICpaymentQueue removedTransactions")
         #endif
     }
-    func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error)
+    public func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error)
     {
         #if DEBUG
         print("ICpaymentQueue restoreCompletedTransactionsFailedWithError")
@@ -280,7 +280,7 @@ class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequestDele
     
     
     // MARK: --- 딜리게이트: SKProductsRequestDelegate
-    func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
+    public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
         let products = response.products
         if products.count != 0 {
             self.inappItem = NSMutableArray.init(capacity: products.count)
