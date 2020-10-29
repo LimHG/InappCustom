@@ -1,0 +1,6 @@
+use_frameworks!
+target 'InappCustom_Tests' do
+  pod 'InappCustom', :path => '../'
+  
+  
+end
