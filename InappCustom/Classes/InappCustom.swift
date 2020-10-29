@@ -8,7 +8,7 @@
 
 import StoreKit
 
-protocol InappCustomProtocol: NSObjectProtocol {
+public protocol InappCustomProtocol: NSObjectProtocol {
     // MARK: --- Protocol: SKProductsRequestDelegate 관련 콜백 함수
     // 인앱 상품 정보 수신 후 화면 갱신 시 호출 함수
     func ICproductsRequestSetUI()
