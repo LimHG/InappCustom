@@ -24,7 +24,7 @@ public protocol InappCustomProtocol: NSObjectProtocol {
     
     // MARK: --- Protocol: 복원로직 관련 콜백 함수
     func ICnotEnableRestore()
-    func ICrestoreFail()
+    func ICrestoreFail(_ error: Error)
     func ICrestoreConsume(_ transaction: SKPaymentTransaction)
 }
 
@@ -32,6 +32,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
     public weak var delegate: InappCustomProtocol?
     public var request: SKProductsRequest? = nil
     public var inappItem: NSMutableArray? = nil
+    private var inappItmeOrder: String = "ASC" // ASC or DESC
     
     public var restoreItem: NSMutableArray? = nil
     public var isRestoreConsume: Bool = false
@@ -90,8 +91,10 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
         }
     }
     // 인앱 상품 정보 가져오기
-    public func ICgetProducts(_ productSet: Set<String>)
+    public func ICgetProducts(_ productSet: Set<String>, _ inappItmeOrder : String = "ASC")
     {
+        self.inappItmeOrder = inappItmeOrder
+        
         if SKPaymentQueue.canMakePayments() {
             self.request = SKProductsRequest(productIdentifiers: productSet)
             self.request?.delegate = self
@@ -205,6 +208,56 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                 break;
             }
         }
+        
+        
+        // * 복원 로직
+        if(self.restoreItem!.count == 0)
+        {
+            
+        } else {
+            var restoreExist : Bool = false
+            for i in 0..<(self.restoreItem!.count)
+            {
+                for j in 0..<(self.inappItem!.count)
+                {
+                    let idx = (self.restoreItem?.count)!-(i+1)
+                    #if DEBUG
+                    print("ICpaymentQueue restore index == \(idx)");
+                    #endif
+                    
+                    if let transaction = self.restoreItem?.object(at: idx) as? SKPaymentTransaction {
+                        if let product = self.inappItem?.object(at: j) as? SKProduct {
+                            #if DEBUG
+                            print("ICpaymentQueue restore productIdentifier1 == \(transaction.payment.productIdentifier)");
+                            print("ICpaymentQueue restore productIdentifier2 == \(product.productIdentifier)");
+                            #endif
+                            
+                            if(transaction.payment.productIdentifier == product.productIdentifier)
+                            {
+                                self.ICgenerateReceipt(transaction: transaction, isRestore: true)
+                                SKPaymentQueue.default().finishTransaction(transaction)
+                                restoreExist = true
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                if(restoreExist)
+                {
+                    break;
+                }
+            }
+            
+            if(restoreExist)
+            {
+                
+            } else {
+                // 복원 진행 팝업 종료 후 완료 안내 팝업
+                self.delegate?.ICnotEnableRestore()
+            }
+        }
+
     }
     public func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
         #if DEBUG
@@ -249,7 +302,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                     print("ICpaymentQueueRestoreCompletedTransactionsFinished [purchased]  productIdentifier == \(transaction.payment.productIdentifier )")
                     #endif
 
-                    self.ICgenerateReceipt(transaction: transaction, isRestore: true)
+                    // self.ICgenerateReceipt(transaction: transaction, isRestore: true)
                     SKPaymentQueue.default().finishTransaction(transaction)
                 }
             }
@@ -275,13 +328,22 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
         #endif
 
         // 복원 진행 팝업 종료 후 복원 실패 팝업 출력
-        self.delegate?.ICrestoreFail()
+        self.delegate?.ICrestoreFail(error)
     }
     
     
     // MARK: --- 딜리게이트: SKProductsRequestDelegate
     public func productsRequest(_ request: SKProductsRequest, didReceive response: SKProductsResponse) {
-        let products = response.products
+        var products = response.products
+        if(self.inappItmeOrder == "DESC" || self.inappItmeOrder == "desc")
+        {
+            products = response.products.sorted(by: {$0.price.doubleValue > $1.price.doubleValue})
+        }
+        else {
+            products = response.products.sorted(by: {$0.price.doubleValue < $1.price.doubleValue})
+        }
+        
+        
         if products.count != 0 {
             self.inappItem = NSMutableArray.init(capacity: products.count)
             self.inappItem?.removeAllObjects()
