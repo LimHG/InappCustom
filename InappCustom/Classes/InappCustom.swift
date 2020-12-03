@@ -72,8 +72,12 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
 
     
     // MARK: --- Func: InappCustom Class
-    public func ICbeforProducts()
+    public func ICbeforProducts(autofini: Bool)
     {
+        #if DEBUG
+        print("ICbeforProducts call");
+        #endif
+        
         // 물려있는 내역 삭제
         for transactionPending in SKPaymentQueue.default().transactions {
             if (transactionPending.transactionState != .purchasing)
@@ -86,10 +90,35 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                 self.isRestoreConsume = true
                 self.restoreTransaction = transactionPending
                 self.delegate?.ICrestoreConsume(transactionPending)
+                
+                if(autofini) {
+                    self.ICbeforProductsFiniTransaction(transactionPending)
+                }
+            }
+        }
+    }
+    public func ICbeforProductsFiniTransaction(_ transaction: SKPaymentTransaction)
+    {
+        #if DEBUG
+        print("ICbeforProductsFiniTransaction call");
+        #endif
+        SKPaymentQueue.default().finishTransaction(transaction)
+    }
+    public func ICbeforProductsRemoveAll()
+    {
+        #if DEBUG
+        print("ICbeforProductsRemoveAll call");
+        #endif
+        
+        // 물려있는 내역 삭제
+        for transactionPending in SKPaymentQueue.default().transactions {
+            if (transactionPending.transactionState != .purchasing)
+            {
                 SKPaymentQueue.default().finishTransaction(transactionPending)
             }
         }
     }
+    
     // 인앱 상품 정보 가져오기
     public func ICgetProducts(_ productSet: Set<String>, _ inappItmeOrder : String = "ASC")
     {

@@ -163,8 +163,10 @@ func ICrestoreFail(_ error: Error)
 // 소모성 상품의 경우 consume 처리가 원활하지 않을 경우 동일한 상품의 재구매가 되지 않도록 설계가 되어 있다. 
 // '2. 인앱 상품 정보 불러오기' 전에 purchasing 되어 있는 트랙젝션을 가져와서 결제를 이어갈 수 있도록 추가 설계를 할 수 있다. 
 // InappCustom Class 안 ICbeforProducts 함수를 통해 팬딩된 상품 가져오기
+// - autofini 값이 true일 경우 재지급 처리와 무관하게 물려있는 트랜젝션을 자동으로 완료처리 한다
+// - autofini 값이 false일 경우 재지급 처리 후 ICbeforProductsFiniTransaction(transaction) 함수를 호출해 주어야 완료처리가 된다.
 if let IC = self.customInapp {
-    IC.ICbeforProducts()
+    IC.ICbeforProducts(autofini: true)
 }
 
 // ICbeforProducts 호출 시 purchasing 된 소모성 상품의 트랜젝션이 있으면 InappCustomProtocol 안 ICrestoreConsume 함수를 호출한다.
@@ -172,6 +174,11 @@ if let IC = self.customInapp {
 func ICrestoreConsume(_ transaction: SKPaymentTransaction)
 {
     // Apple Store 결제는 되었으나 인앱상품 미지급 처리시 호출되며, 미지급에 대한 상품을 지급하도록 이곳에서 처리 한다.
+}
+
+// 소모성 상품에 대한 복원 로직 처리를 원하지 않을 경우 ICbeforProductsRemoveAll 함수로 물려있는 트랜젝션을 모두 완료로 처리해준다.
+if let IC = self.customInapp {
+    IC.ICbeforProductsRemoveAll()
 }
 ```
 
