@@ -165,6 +165,7 @@ func ICrestoreFail(_ error: Error)
 // InappCustom Class 안 ICbeforProducts 함수를 통해 팬딩된 상품 가져오기
 // - autofini 값이 true일 경우 재지급 처리와 무관하게 물려있는 트랜젝션을 자동으로 완료처리 한다
 // - autofini 값이 false일 경우 재지급 처리 후 ICbeforProductsFiniTransaction(transaction) 함수를 호출해 주어야 완료처리가 된다.
+//   단, 물려있는 상품 중 1건에 대해서만 처리가 가능하다, 2건 이상의 경우 물려있는 트랜젝션을 모두 제거한다.
 if let IC = self.customInapp {
     IC.ICbeforProducts(autofini: true)
 }

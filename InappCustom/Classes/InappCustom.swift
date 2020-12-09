@@ -79,20 +79,31 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
         #endif
         
         // 물려있는 내역 삭제
-        for transactionPending in SKPaymentQueue.default().transactions {
-            if (transactionPending.transactionState != .purchasing)
-            {
-                #if DEBUG
-                print("ICinappCustom before transactionPending: \(transactionPending.transactionIdentifier ?? "")");
-                #endif
-                // self.ICgenerateReceipt(transaction: transactionPending, isRestore: false)
-                
-                self.isRestoreConsume = true
-                self.restoreTransaction = transactionPending
-                self.delegate?.ICrestoreConsume(transactionPending)
-                
-                if(autofini) {
-                    self.ICbeforProductsFiniTransaction(transactionPending)
+        self.restoreTransaction = nil
+        if(SKPaymentQueue.default().transactions.count > 1)
+        {
+            self.ICbeforProductsRemoveAll()
+        } else
+        {
+            for transactionPending in SKPaymentQueue.default().transactions {
+                if (transactionPending.transactionState == .purchased || transactionPending.transactionState == .restored )
+                {
+                    #if DEBUG
+                    print("ICinappCustom before transactionPending: \(transactionPending.transactionIdentifier ?? "")");
+                    print("ICbeforProducts transactionPending.transactionIdentifier == \(transactionPending.transactionIdentifier ?? "")")
+                    print("ICbeforProducts transactionPending.transactionDate == \(String(describing: transactionPending.transactionDate))")
+                    #endif
+                    // self.ICgenerateReceipt(transaction: transactionPending, isRestore: false)
+                    
+                    self.isRestoreConsume = true
+                    self.restoreTransaction = transactionPending
+                    self.delegate?.ICrestoreConsume(transactionPending)
+                    
+                    if(autofini) {
+                        self.ICbeforProductsFiniTransaction(transactionPending)
+                    }
+                    
+                    break
                 }
             }
         }
@@ -112,7 +123,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
         
         // 물려있는 내역 삭제
         for transactionPending in SKPaymentQueue.default().transactions {
-            if (transactionPending.transactionState != .purchasing)
+            if (transactionPending.transactionState == .purchased || transactionPending.transactionState == .restored )
             {
                 SKPaymentQueue.default().finishTransaction(transactionPending)
             }
