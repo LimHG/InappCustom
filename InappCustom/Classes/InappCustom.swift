@@ -44,7 +44,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
         super.init()
         
         #if DEBUG
-        print("ICinappCustom init")
+        print("InappCustom ICinappCustom init")
         #endif
         self.viewController = viewC
         
@@ -56,7 +56,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
 
     deinit {
         #if DEBUG
-        print("ICinappCustom deinit")
+        print("InappCustom ICinappCustom deinit")
         #endif
         
         // * 요청 취소
@@ -75,50 +75,73 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
     public func ICbeforProducts(autofini: Bool)
     {
         #if DEBUG
-        print("ICbeforProducts call");
+        print("InappCustom ICbeforProducts call");
         #endif
         
-        // 물려있는 내역 삭제
-        self.restoreTransaction = nil
-        if(SKPaymentQueue.default().transactions.count > 1)
-        {
-            self.ICbeforProductsRemoveAll()
-        } else
-        {
-            for transactionPending in SKPaymentQueue.default().transactions {
-                if (transactionPending.transactionState == .purchased || transactionPending.transactionState == .restored )
-                {
-                    #if DEBUG
-                    print("ICinappCustom before transactionPending: \(transactionPending.transactionIdentifier ?? "")");
-                    print("ICbeforProducts transactionPending.transactionIdentifier == \(transactionPending.transactionIdentifier ?? "")")
-                    print("ICbeforProducts transactionPending.transactionDate == \(String(describing: transactionPending.transactionDate))")
-                    #endif
-                    // self.ICgenerateReceipt(transaction: transactionPending, isRestore: false)
-                    
-                    self.isRestoreConsume = true
-                    self.restoreTransaction = transactionPending
-                    self.delegate?.ICrestoreConsume(transactionPending)
-                    
-                    if(autofini) {
-                        self.ICbeforProductsFiniTransaction(transactionPending)
-                    }
-                    
-                    break
+//        // 물려있는 내역 삭제
+//        self.restoreTransaction = nil
+//        if(SKPaymentQueue.default().transactions.count > 1)
+//        {
+//            self.ICbeforProductsRemoveAll()
+//        } else
+//        {
+//            for transactionPending in SKPaymentQueue.default().transactions {
+//                if (transactionPending.transactionState == .purchased || transactionPending.transactionState == .restored )
+//                {
+//                    #if DEBUG
+//                    print("InappCustom ICinappCustom before transactionPending: \(transactionPending.transactionIdentifier ?? "")");
+//                    print("InappCustom ICbeforProducts transactionPending.transactionIdentifier == \(transactionPending.transactionIdentifier ?? "")")
+//                    print("InappCustom ICbeforProducts transactionPending.transactionDate == \(String(describing: transactionPending.transactionDate))")
+//                    #endif
+//                    // self.ICgenerateReceipt(transaction: transactionPending, isRestore: false)
+//
+//                    self.isRestoreConsume = true
+//                    self.restoreTransaction = transactionPending
+//                    self.delegate?.ICrestoreConsume(transactionPending)
+//
+//                    if(autofini) {
+//                        self.ICbeforProductsFiniTransaction(transactionPending)
+//                    }
+//
+//                    break
+//                }
+//            }
+//        }
+        
+        
+        for transactionPending in SKPaymentQueue.default().transactions {
+            if (transactionPending.transactionState == .purchased || transactionPending.transactionState == .restored )
+            {
+                #if DEBUG
+                print("InappCustom ICinappCustom before transactionPending: \(transactionPending.transactionIdentifier ?? "")");
+                print("InappCustom ICbeforProducts transactionPending.transactionIdentifier == \(transactionPending.transactionIdentifier ?? "")")
+                print("InappCustom ICbeforProducts transactionPending.transactionDate == \(String(describing: transactionPending.transactionDate))")
+                #endif
+                // self.ICgenerateReceipt(transaction: transactionPending, isRestore: false)
+
+                self.isRestoreConsume = true
+                self.restoreTransaction = transactionPending
+                self.delegate?.ICrestoreConsume(transactionPending)
+
+                if(autofini) {
+                    self.ICbeforProductsFiniTransaction(transactionPending)
                 }
+
+                break
             }
         }
     }
     public func ICbeforProductsFiniTransaction(_ transaction: SKPaymentTransaction)
     {
         #if DEBUG
-        print("ICbeforProductsFiniTransaction call");
+        print("InappCustom ICbeforProductsFiniTransaction call");
         #endif
         SKPaymentQueue.default().finishTransaction(transaction)
     }
     public func ICbeforProductsRemoveAll()
     {
         #if DEBUG
-        print("ICbeforProductsRemoveAll call");
+        print("InappCustom ICbeforProductsRemoveAll call");
         #endif
         
         // 물려있는 내역 삭제
@@ -141,7 +164,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
             self.request?.start()
         } else {
             #if DEBUG
-            print("ICgetProducts 단말기 결제 가능상태 X")
+            print("InappCustom ICgetProducts 단말기 결제 가능상태 X")
             #endif
         }
     }
@@ -174,7 +197,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                     encReceipt = encReceipt?.replacingOccurrences(of: "+", with: "%2B")
                     
                     #if DEBUG
-                    print("ICgenerateReceipt encReceipt : \(encReceipt ?? "")")
+                    print("InappCustom ICgenerateReceipt encReceipt : \(encReceipt ?? "")")
                     #endif
                     
                     // 영수증 생성이 성공했을 경우
@@ -185,7 +208,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
             }
         } catch {
             #if DEBUG
-            print("ICgenerateReceipt 생성 오류")
+            print("InappCustom ICgenerateReceipt 생성 오류")
             #endif
         }
     }
@@ -199,6 +222,10 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
     
     // MARK: --- 딜리게이트: SKPaymentTransactionObserver
     public func paymentQueue(_ queue: SKPaymentQueue, updatedTransactions transactions: [SKPaymentTransaction]) {
+        #if DEBUG
+        print("InappCustom ICpaymentQueue paymentQueue CALL")
+        #endif
+        
         // 복원 상품이 있다면 받을 준비
         self.restoreItem = NSMutableArray.init()
         self.restoreItem?.removeAllObjects()
@@ -208,8 +235,8 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
             switch transaction.transactionState {
             case SKPaymentTransactionState.purchased:
                 #if DEBUG
-                print("ICpaymentQueue transaction purchased == \(transaction.transactionIdentifier ?? "")")
-                print("ICpaymentQueue transaction restored original == \(transaction.original?.transactionIdentifier ?? "")")
+                print("InappCustom ICpaymentQueue transaction purchased == \(transaction.transactionIdentifier ?? "")")
+                print("InappCustom ICpaymentQueue transaction restored original == \(transaction.original?.transactionIdentifier ?? "")")
                 #endif
                 
                 // 결제 성공 시 처리 함수 호출
@@ -220,7 +247,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                 
             case SKPaymentTransactionState.failed:
                 #if DEBUG
-                print("ICpaymentQueue transaction failed == \(transaction.transactionIdentifier ?? "")")
+                print("InappCustom ICpaymentQueue transaction failed == \(transaction.transactionIdentifier ?? "")")
                 #endif
                 
                 
@@ -230,16 +257,16 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                 
             case SKPaymentTransactionState.restored:
                 #if DEBUG
-                print("ICpaymentQueue transaction restored == \(transaction.transactionIdentifier ?? "")")
-                print("ICpaymentQueue transaction restored original == \(transaction.original?.transactionIdentifier ?? "")")
-                print("ICpaymentQueue transaction restored productIdentifier == \(transaction.payment.productIdentifier )")
+                print("InappCustom ICpaymentQueue transaction restored == \(transaction.transactionIdentifier ?? "")")
+                print("InappCustom ICpaymentQueue transaction restored original == \(transaction.original?.transactionIdentifier ?? "")")
+                print("InappCustom ICpaymentQueue transaction restored productIdentifier == \(transaction.payment.productIdentifier )")
                 #endif
                 self.restoreItem?.add(transaction)
                 break;
                 
             case SKPaymentTransactionState.purchasing:
                 #if DEBUG
-                print("ICpaymentQueue transaction purchasing == \(transaction.transactionIdentifier ?? "")")
+                print("InappCustom ICpaymentQueue transaction purchasing == \(transaction.transactionIdentifier ?? "")")
                 #endif
                 break;
                 
@@ -262,14 +289,14 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                 {
                     let idx = (self.restoreItem?.count)!-(i+1)
                     #if DEBUG
-                    print("ICpaymentQueue restore index == \(idx)");
+                    print("InappCustom ICpaymentQueue restore index == \(idx)");
                     #endif
                     
                     if let transaction = self.restoreItem?.object(at: idx) as? SKPaymentTransaction {
                         if let product = self.inappItem?.object(at: j) as? SKProduct {
                             #if DEBUG
-                            print("ICpaymentQueue restore productIdentifier1 == \(transaction.payment.productIdentifier)");
-                            print("ICpaymentQueue restore productIdentifier2 == \(product.productIdentifier)");
+                            print("InappCustom ICpaymentQueue restore productIdentifier1 == \(transaction.payment.productIdentifier)");
+                            print("InappCustom ICpaymentQueue restore productIdentifier2 == \(product.productIdentifier)");
                             #endif
                             
                             if(transaction.payment.productIdentifier == product.productIdentifier)
@@ -301,7 +328,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
     }
     public func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
         #if DEBUG
-        print("ICpaymentQueueRestoreCompletedTransactionsFinished == \(queue.transactions.count)")
+        print("InappCustom ICpaymentQueueRestoreCompletedTransactionsFinished == \(queue.transactions.count)")
         #endif
 
         // 복원할 내역이 없을 경우
@@ -322,9 +349,9 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                     restoreEmpty = false
                     
                     #if DEBUG
-                    print("ICpaymentQueueRestoreCompletedTransactionsFinished [restored] transactionIdentifier == \(transaction.transactionIdentifier ?? "")")
-                    print("ICpaymentQueueRestoreCompletedTransactionsFinished [restored]  transactionIdentifier original == \(transaction.original?.transactionIdentifier ?? "")")
-                    print("ICpaymentQueueRestoreCompletedTransactionsFinished [restored]  productIdentifier == \(transaction.payment.productIdentifier )")
+                    print("InappCustom ICpaymentQueueRestoreCompletedTransactionsFinished [restored] transactionIdentifier == \(transaction.transactionIdentifier ?? "")")
+                    print("InappCustom ICpaymentQueueRestoreCompletedTransactionsFinished [restored]  transactionIdentifier original == \(transaction.original?.transactionIdentifier ?? "")")
+                    print("InappCustom ICpaymentQueueRestoreCompletedTransactionsFinished [restored]  productIdentifier == \(transaction.payment.productIdentifier )")
                     #endif
                     
                     
@@ -337,9 +364,9 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                     restoreEmpty = false
 
                     #if DEBUG
-                    print("ICpaymentQueueRestoreCompletedTransactionsFinished [purchased]  transactionIdentifier == \(transaction.transactionIdentifier ?? "")")
-                    print("ICpaymentQueueRestoreCompletedTransactionsFinished [purchased]  transactionIdentifier original == \(transaction.original?.transactionIdentifier ?? "")")
-                    print("ICpaymentQueueRestoreCompletedTransactionsFinished [purchased]  productIdentifier == \(transaction.payment.productIdentifier )")
+                    print("InappCustom ICpaymentQueueRestoreCompletedTransactionsFinished [purchased]  transactionIdentifier == \(transaction.transactionIdentifier ?? "")")
+                    print("InappCustom ICpaymentQueueRestoreCompletedTransactionsFinished [purchased]  transactionIdentifier original == \(transaction.original?.transactionIdentifier ?? "")")
+                    print("InappCustom ICpaymentQueueRestoreCompletedTransactionsFinished [purchased]  productIdentifier == \(transaction.payment.productIdentifier )")
                     #endif
 
                     // self.ICgenerateReceipt(transaction: transaction, isRestore: true)
@@ -358,13 +385,13 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
     public func paymentQueue(_ queue: SKPaymentQueue, removedTransactions transactions: [SKPaymentTransaction])
     {
         #if DEBUG
-        print("ICpaymentQueue removedTransactions")
+        print("InappCustom ICpaymentQueue removedTransactions")
         #endif
     }
     public func paymentQueue(_ queue: SKPaymentQueue, restoreCompletedTransactionsFailedWithError error: Error)
     {
         #if DEBUG
-        print("ICpaymentQueue restoreCompletedTransactionsFailedWithError")
+        print("InappCustom ICpaymentQueue restoreCompletedTransactionsFailedWithError")
         #endif
 
         // 복원 진행 팝업 종료 후 복원 실패 팝업 출력
@@ -397,12 +424,12 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                 let formattedString2 = numberFormatter.string(from: NSNumber(value: ((products[i] as SKProduct).price.doubleValue)/7))
                 
                 #if DEBUG
-                print("ICproductsRequest 상품 이름 == \((products[i] as SKProduct).localizedTitle )")
-                print("ICproductsRequest 상품 설명 == \((products[i] as SKProduct).localizedDescription )")
-                print("ICproductsRequest 상품 가격 1 == \(String(describing: formattedString))")
-                print("ICproductsRequest 상품 가격 2 == \(String(describing: formattedString2))")
-                print("ICproductsRequest 상품 가격 3 == \((products[i] as SKProduct).price.doubleValue)")
-                print("ICproductsRequest 상품 로드 지역 == \((products[i] as SKProduct).priceLocale.currencyCode ?? "")")
+                print("InappCustom ICproductsRequest 상품 이름 == \((products[i] as SKProduct).localizedTitle )")
+                print("InappCustom ICproductsRequest 상품 설명 == \((products[i] as SKProduct).localizedDescription )")
+                print("InappCustom ICproductsRequest 상품 가격 1 == \(String(describing: formattedString))")
+                print("InappCustom ICproductsRequest 상품 가격 2 == \(String(describing: formattedString2))")
+                print("InappCustom ICproductsRequest 상품 가격 3 == \((products[i] as SKProduct).price.doubleValue)")
+                print("InappCustom ICproductsRequest 상품 로드 지역 == \((products[i] as SKProduct).priceLocale.currencyCode ?? "")")
                 #endif
 
                 self.inappItem?.add(products[i])
@@ -413,7 +440,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
             self.delegate?.ICproductsRequestSetUI()
         } else {
             #if DEBUG
-            print("ICproductsRequest 등록된 상품 확인 불가")
+            print("InappCustom ICproductsRequest 등록된 상품 확인 불가")
             #endif
         }
         
@@ -421,7 +448,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
         let productList = response.invalidProductIdentifiers
         for productItem in productList {
             #if DEBUG
-            print("ICproductsRequest Product not fount : \(productItem)")
+            print("InappCustom ICproductsRequest Product not fount : \(productItem)")
             #endif
         }
 
