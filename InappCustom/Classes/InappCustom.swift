@@ -77,38 +77,6 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
         #if DEBUG
         print("InappCustom ICbeforProducts call");
         #endif
-        
-//        // 물려있는 내역 삭제
-//        self.restoreTransaction = nil
-//        if(SKPaymentQueue.default().transactions.count > 1)
-//        {
-//            self.ICbeforProductsRemoveAll()
-//        } else
-//        {
-//            for transactionPending in SKPaymentQueue.default().transactions {
-//                if (transactionPending.transactionState == .purchased || transactionPending.transactionState == .restored )
-//                {
-//                    #if DEBUG
-//                    print("InappCustom ICinappCustom before transactionPending: \(transactionPending.transactionIdentifier ?? "")");
-//                    print("InappCustom ICbeforProducts transactionPending.transactionIdentifier == \(transactionPending.transactionIdentifier ?? "")")
-//                    print("InappCustom ICbeforProducts transactionPending.transactionDate == \(String(describing: transactionPending.transactionDate))")
-//                    #endif
-//                    // self.ICgenerateReceipt(transaction: transactionPending, isRestore: false)
-//
-//                    self.isRestoreConsume = true
-//                    self.restoreTransaction = transactionPending
-//                    self.delegate?.ICrestoreConsume(transactionPending)
-//
-//                    if(autofini) {
-//                        self.ICbeforProductsFiniTransaction(transactionPending)
-//                    }
-//
-//                    break
-//                }
-//            }
-//        }
-        
-        
         for transactionPending in SKPaymentQueue.default().transactions {
             if (transactionPending.transactionState == .purchased || transactionPending.transactionState == .restored )
             {
@@ -128,6 +96,43 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                 }
 
                 break
+            }
+        }
+    }
+    public func ICbeforProducts(autofini: Bool, _ productSet:Set<String>)
+    {
+        #if DEBUG
+        print("InappCustom ICbeforProducts call");
+        #endif
+        for transactionPending in SKPaymentQueue.default().transactions {
+            if (transactionPending.transactionState == .purchased || transactionPending.transactionState == .restored )
+            {
+                for product in productSet{
+                    #if DEBUG
+                    print("InappCustom ICbeforProducts product: \(product)")
+                    print("InappCustom ICbeforProducts productIdentifier == \(transactionPending.payment.productIdentifier)")
+                    #endif
+                    
+                    if(transactionPending.payment.productIdentifier == product)
+                    {
+                        #if DEBUG
+                        print("InappCustom ICbeforProducts transactionPending: \(transactionPending.transactionIdentifier ?? "")");
+                        print("InappCustom ICbeforProducts transactionPending.transactionIdentifier == \(transactionPending.transactionIdentifier ?? "")")
+                        print("InappCustom ICbeforProducts transactionPending.transactionDate == \(String(describing: transactionPending.transactionDate))")
+                        #endif
+                        // self.ICgenerateReceipt(transaction: transactionPending, isRestore: false)
+
+                        self.isRestoreConsume = true
+                        self.restoreTransaction = transactionPending
+                        self.delegate?.ICrestoreConsume(transactionPending)
+
+                        if(autofini) {
+                            self.ICbeforProductsFiniTransaction(transactionPending)
+                        }
+
+                        break
+                    }
+                }
             }
         }
     }

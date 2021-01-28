@@ -175,6 +175,11 @@ func ICrestoreFail(_ error: Error)
 if let IC = self.customInapp {
     IC.ICbeforProducts(autofini: true)
 }
+// 만약 언어별 상품이 다를 경우 해당 언어에 맞는 복원상품을 찾으려면 아래와 같이 현재 보는 결제 화면의 상품 ID 리스트를 추가로 전달한다. 
+// - productSet은 productSet:Set<String> 이 타입으로 전달된다.
+if let IC = self.customInapp {
+    IC.ICbeforProducts(autofini: true, productSet)
+}
 
 // ICbeforProducts 호출 시 purchasing 된 소모성 상품의 트랜젝션이 있으면 InappCustomProtocol 안 ICrestoreConsume 함수를 호출한다.
 // ICrestoreConsume 의 경우 purchasing 트랜젝션을 파라미터로 전달한다.
@@ -187,6 +192,10 @@ func ICrestoreConsume(_ transaction: SKPaymentTransaction)
 if let IC = self.customInapp {
     IC.ICbeforProductsRemoveAll()
 }
+
+// [참고사항] 
+// 소모성 상품의 FiniTransaction 처리가 되지 않은 상품이 존재하여 해당 상품을 클릭 시 Apple에서 결제한 상품으로 판단하여 결제가 된것으로 동작 한다. 
+// 하여 결제 후 처리에서 해당 트랜젝션에 대한 추가 FiniTransaction을 수행해 주서야 한다.
 ```
 
 Protocal. InappCustomProtocol 함수 리스트
