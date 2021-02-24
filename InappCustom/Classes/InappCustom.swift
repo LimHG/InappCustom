@@ -290,34 +290,40 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
             var restoreExist : Bool = false
             for i in 0..<(self.restoreItem!.count)
             {
-                for j in 0..<(self.inappItem!.count)
+                if(self.inappItem != nil)
                 {
-                    let idx = (self.restoreItem?.count)!-(i+1)
-                    #if DEBUG
-                    print("InappCustom ICpaymentQueue restore index == \(idx)");
-                    #endif
-                    
-                    if let transaction = self.restoreItem?.object(at: idx) as? SKPaymentTransaction {
-                        if let product = self.inappItem?.object(at: j) as? SKProduct {
+                    if(self.inappItem!.count > 0)
+                    {
+                        for j in 0..<(self.inappItem!.count)
+                        {
+                            let idx = (self.restoreItem?.count)!-(i+1)
                             #if DEBUG
-                            print("InappCustom ICpaymentQueue restore productIdentifier1 == \(transaction.payment.productIdentifier)");
-                            print("InappCustom ICpaymentQueue restore productIdentifier2 == \(product.productIdentifier)");
+                            print("InappCustom ICpaymentQueue restore index == \(idx)");
                             #endif
                             
-                            if(transaction.payment.productIdentifier == product.productIdentifier)
-                            {
-                                self.ICgenerateReceipt(transaction: transaction, isRestore: true)
-                                SKPaymentQueue.default().finishTransaction(transaction)
-                                restoreExist = true
-                                break;
+                            if let transaction = self.restoreItem?.object(at: idx) as? SKPaymentTransaction {
+                                if let product = self.inappItem?.object(at: j) as? SKProduct {
+                                    #if DEBUG
+                                    print("InappCustom ICpaymentQueue restore productIdentifier1 == \(transaction.payment.productIdentifier)");
+                                    print("InappCustom ICpaymentQueue restore productIdentifier2 == \(product.productIdentifier)");
+                                    #endif
+                                    
+                                    if(transaction.payment.productIdentifier == product.productIdentifier)
+                                    {
+                                        self.ICgenerateReceipt(transaction: transaction, isRestore: true)
+                                        SKPaymentQueue.default().finishTransaction(transaction)
+                                        restoreExist = true
+                                        break;
+                                    }
+                                }
                             }
                         }
+                        
+                        if(restoreExist)
+                        {
+                            break;
+                        }
                     }
-                }
-                
-                if(restoreExist)
-                {
-                    break;
                 }
             }
             
