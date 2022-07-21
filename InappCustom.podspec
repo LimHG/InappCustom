@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'InappCustom'
-  s.version          = '0.1.9'
+  s.version          = '0.2.0'
   s.summary          = 'StoreKit 간편 사용을 위한 API KIT'
   s.swift_version    = '5.0'
 
