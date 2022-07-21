@@ -296,7 +296,8 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
                     {
                         for j in 0..<(self.inappItem!.count)
                         {
-                            let idx = (self.restoreItem?.count)!-(i+1)
+                            let idx = i
+                            //let idx = (self.restoreItem?.count)!-(i+1)
                             #if DEBUG
                             print("InappCustom ICpaymentQueue restore index == \(idx)");
                             #endif
