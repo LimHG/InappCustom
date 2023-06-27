@@ -36,7 +36,7 @@ public class InappCustom: NSObject, SKPaymentTransactionObserver, SKProductsRequ
     public var restoreItem: NSMutableArray? = nil
     public var isRestoreConsume: Bool = false
     public var restoreTransaction: SKPaymentTransaction? = nil
-    private var viewController: UIViewController? = nil
+    weak var viewController: UIViewController? = nil
     
     public init(_ viewC : UIViewController) {
         super.init()
